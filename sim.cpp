@@ -3,43 +3,9 @@
 #include "MemoryStore.h"
 #include "RegisterInfo.h"
 #include "EndianHelpers.h"
+#include "decode.h"
 
 using namespace std;
-
-enum {OPCODE_MASK = 0xfc000000, OPCODE_SHIFT = 26,
-      RS_MASK = 0x3e00000, RS_SHIFT = 21,
-      RT_MASK = 0x1f0000, RT_SHIFT = 16,
-      RD_MASK = 0xf800, RD_SHIFT = 11,
-      SHAMT_MASK = 0x7c0, SHAMT_SHIFT = 6,
-      FUNCT_MASK = 0x3f, FUNCT_SHIFT = 0,
-      IMM_MASK = 0xffff, IMM_SHIFT = 0,
-      ADDR_MASK = 0x3ffffff,
-      J_PC_MASK = 0xf0000000};
-
-static void rTypeDecode(uint32_t instr, int *rs, int *rt, int *rd, int *shamt,
-                        int *funct)
-{
-    *rs = (instr & RS_MASK) >> RS_SHIFT;
-    *rt = (instr & RT_MASK) >> RT_SHIFT;
-    *rd = (instr & RD_MASK) >> RD_SHIFT;
-    *shamt = (instr & SHAMT_MASK) >> SHAMT_SHIFT;
-    *funct = (instr & FUNCT_MASK) >> FUNCT_SHIFT;
-}
-
-static void iTypeDecode(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-    *rs = (instr & RS_MASK) >> RS_SHIFT;
-    *rt = (instr & RT_MASK) >> RT_SHIFT;
-    *imm = (instr & IMM_MASK) >> IMM_SHIFT;
-}
-
-static void jTypeDecode(uint32_t instr, uint32_t *addr)
-{
-    /* this is commented out because we havent established a method of storing PC
-     yet so this cant really be done cause i want to do JumpAddr conversion here
-    *addr = ((PC+4) & J_PC_MASK) | ((instr & ADDR_MASK) << 2);
-    */
-}
 
 static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
