@@ -6,10 +6,6 @@
 #ifndef DECODE_INCLUDED
 #define DECODE_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 /* constants for masking and shifting bits */
@@ -32,9 +28,5 @@ void iTypeDecode(uint32_t instr, int *rs, int *rt, uint16_t *imm);
 
 /* Decoes j type instructions */
 void jTypeDecode(uint32_t instr, uint32_t *addr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

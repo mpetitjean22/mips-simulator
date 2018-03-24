@@ -3,6 +3,9 @@
 /* Author: s l o t h                              */
 /*------------------------------------------------*/
 #include "decode.h"
+#include "register.h"
+
+extern Register_T regs;
 
 void rTypeDecode(uint32_t instr, int *rs, int *rt, int *rd, int *shamt,
                  int *funct)
@@ -23,8 +26,5 @@ void iTypeDecode(uint32_t instr, int *rs, int *rt, uint16_t *imm)
 
 void jTypeDecode(uint32_t instr, uint32_t *addr)
 {
-  /* this is commented out because we havent established a method of storing PC
-     yet so this cant really be done cause i want to do JumpAddr conversion here
-     *addr = ((PC+4) & J_PC_MASK) | ((instr & ADDR_MASK) << 2);
-     */
+    *addr = ((regs.pc + 4) & J_PC_MASK) | ((instr & ADDR_MASK) << 2);
 }

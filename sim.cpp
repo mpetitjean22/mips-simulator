@@ -1,11 +1,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include "MemoryStore.h"
+
+#ifndef REGISTERINFO_INCLUDED
+#define REGISTERINFO_INCLUDED
 #include "RegisterInfo.h"
+#endif
+
 #include "EndianHelpers.h"
 #include "decode.h"
+#include "register.h"
 
 using namespace std;
+
+Register_T regs;
 
 static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
