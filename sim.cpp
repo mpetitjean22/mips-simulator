@@ -112,31 +112,30 @@ int main(int argc, char *argv[])
     reg.ra = 0;
 
     for(i=0; i<V_REG_SIZE; i++){
-      reg.v[i] = 0;
+        reg.v[i] = 0;
     }
 
     for(i=0; i<A_REG_SIZE; i++){
-      reg.a[i] = 0;
+        reg.a[i] = 0;
     }
 
     for(i=0; i<T_REG_SIZE; i++){
-      reg.t[i] = 0;
+        reg.t[i] = 0;
     }
 
     for(i=0; i<S_REG_SIZE; i++){
-      reg.s[i] = 0;
+        reg.s[i] = 0;
     }
 
     for(i =0; i<K_REG_SIZE; i++){
-      reg.k[i] = 0;
+        reg.k[i] = 0;
     }
 
     while ( !feof(file)) {
         uint32_t temp;
-
-	fread(&temp, 4, 1, file);
-	mem->setMemValue(address, ConvertWordToBigEndian(temp), WORD_SIZE);
-	address+=0x4;
+        fread(&temp, 4, 1, file);
+        mem->setMemValue(address, ConvertWordToBigEndian(temp), WORD_SIZE);
+	    address+=0x4;
     }
 
 
