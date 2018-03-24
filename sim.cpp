@@ -28,22 +28,22 @@ static void arithERROR(uint32_t instr, int rs, int rt, int rd, int shamt)
 }
 
 static void (*arithDecodeTable[64])(uint32_t, int, int, int, int) = {
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x00-0x03
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x04-0x07
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x08-0x11
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x12-0x15
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x16-0x19
-    instrADD,   arithERROR, arithERROR, arithERROR, // 0x20-0x23
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x24-0x27
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x28-0x31
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x32-0x35
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x36-0x39
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x40-0x43
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x44-0x47
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x48-0x51
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x52-0x55
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x56-0x59
-    arithERROR, arithERROR, arithERROR, arithERROR, // 0x60-0x63
+    instrSLL,   arithERROR, instrSRL,   arithERROR,  // 0x00-0x03
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x04-0x07
+    instrJR,    arithERROR, arithERROR, arithERROR,  // 0x08-0x0B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x0C-0x0F
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x10-0x13
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x14-0x17
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x18-0x1B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x1C-0x1F
+    instrADD,   instrADDU,  instrSUB,   instrSUBU,   // 0x20-0x23
+    instrAND,   instrOR,    arithERROR, instrNOR,    // 0x24-0x27
+    arithERROR, arithERROR, instrSLT,   instrSLTU,   // 0x28-0x2B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x2C-0x2F
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x30-0x33
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x34-0x37
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x38-0x3B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x3C-0x3F
 };
 
 static void arithDecode(uint32_t instr)
@@ -62,22 +62,22 @@ static void rootERROR(uint32_t instr)
 }
 
 static void (*rootDecodeTable[64])(uint32_t) = {
-    arithDecode, rootERROR, rootERROR, rootERROR, // 0x00-0x03
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x04-0x07
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x08-0x11
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x12-0x15
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x16-0x19
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x20-0x23
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x24-0x27
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x28-0x31
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x32-0x35
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x36-0x39
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x40-0x43
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x44-0x47
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x48-0x51
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x52-0x55
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x56-0x59
-    rootERROR,   rootERROR, rootERROR, rootERROR, // 0x60-0x63
+    arithDecode, rootERROR,  instrJ,    instrJAL,    // 0x00-0x03
+    instrBEQ,    instrBNE,   rootERROR, rootERROR,   // 0x04-0x07
+    instrADDI,   instrADDIU, instrSLTI, instrSLTU,   // 0x08-0x0B
+    instrANDI,   instrORI,   rootERROR, instrLUI,    // 0x0C-0x0F
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x10-0x13
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x14-0x17
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x18-0x1B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x1C-0x1F
+    rootERROR,   rootERROR,  rootERROR, instrLW,     // 0x20-0x23
+    instrLBU,    instrLHU,   rootERROR, rootERROR,   // 0x24-0x27
+    instrSB,     instrSH,    rootERROR, instrSW,     // 0x28-0x2B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x2C-0x2F
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x30-0x33
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x34-0x37
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x38-0x3B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x3C-0x3F
 };
 
 static void rootDecode(uint32_t instr)
