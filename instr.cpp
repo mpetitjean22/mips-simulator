@@ -226,22 +226,53 @@ void instrBNE(uint32_t instr)
 
 void instrLBU(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
+   mem->getMemValue(memAddress, result, BYTE_SIZE);
+   generalRegWrite(regs, rt, result);
+   pcIncrementFour(regs);
 }
 
 void instrLHU(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
+   mem->getMemValue(memAddress, result, HALF_SIZE);
+   generalRegWrite(regs, rt, result);
+   pcIncrementFour(regs);
 }
 
 void instrLUI(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t result;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   result = (uint32)(imm << 16);
+   generalRegWrite(regs, rt, result);
+   pcIncrementFour(regs);
 }
 
 void instrLW(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
+   mem->getMemValue(memAddress, result, WORD_SIZE);
+   generalRegWrite(regs, rt, result);
+   pcIncrementFour(regs);
 }
 
 void instrORI(uint32_t instr)
@@ -288,15 +319,38 @@ void instrSLTIU(uint32_t instr)
 
 void instrSB(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result, val;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+   val = (uint32_t)(generalRegRead(regs, rt) & 0xff);
+   mem->setMemValue(memAddress, val, BYTE_SIZE);
+   pcIncrementFour(regs);
 }
 
 void instrSH(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result, val;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+   val = (uint32_t)(generalRegRead(regs, rt) & 0xffff);
+   mem->setMemValue(memAddress, val, HALF_SIZE);
+   pcIncrementFour(regs);
 }
 
 void instrSW(uint32_t instr)
 {
-       // this isnt done obviously im just showing this as an example
+   int rs, rt;
+   uint16_t imm;
+   uint32_t memAddress, result, val;
+
+   iTypeDecode(instr, &rs, &rt, &imm);
+   memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+   mem->setMemValue(memAddress, generalRegRead(regs, rt), WORD_SIZE);
+   pcIncrementFour(regs);
 }
