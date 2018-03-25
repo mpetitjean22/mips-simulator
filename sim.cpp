@@ -59,10 +59,11 @@ static void rootERROR(uint32_t instr)
     exit(EXIT_FAILURE);
 }
 
+
 static void (*rootDecodeTable[64])(uint32_t) = {
     arithDecode, rootERROR,  instrJ,    instrJAL,    // 0x00-0x03
     instrBEQ,    instrBNE,   rootERROR, rootERROR,   // 0x04-0x07
-    instrADDI,   instrADDIU, instrSLTI, instrSLTU,   // 0x08-0x0B
+    instrADDI,   instrADDIU, instrSLTI, rootERROR,   // 0x08-0x0B
     instrANDI,   instrORI,   rootERROR, instrLUI,    // 0x0C-0x0F
     rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x10-0x13
     rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x14-0x17
