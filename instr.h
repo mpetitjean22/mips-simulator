@@ -1,156 +1,39 @@
 /*--------------------------------------------------------------------*/
-/* instr.h                                                            */
+/* instr.cpp                                                          */
 /* Author: S L O T H                                                  */
 /*--------------------------------------------------------------------*/
 
-/* R TYPE INSTRUCTIONS */
-void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
+/* R types */
+void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSLT(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt);
 
-void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
+/* J types */
+void instrJ(uint32_t instr);
+void instrJAL(uint32_t instr);
 
-void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSLT(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-/*--------------------------------------------------------------------*/
-
-/* J TYPE INSTRUCTIONS */
-void instrJ(uint32_t instr, uint32_t addr)
-{
-
-}
-
-void instrJAL(uint32_t instr, uint32_t addr)
-{
-
-}
-
-/*--------------------------------------------------------------------*/
-
-/* I TYPE INSTRUCTIONS */
-void instrADDI(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrADDIU(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrANDI(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrBEQ(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrBNE(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrLBU(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrLHU(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrLUI(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrLW(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrORI(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSLTI(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSLTIU(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSB(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSH(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
-
-void instrSW(uint32_t instr, int *rs, int *rt, uint16_t *imm)
-{
-       // this isnt done obviously im just showing this as an example
-}
+/* I types */
+void instrADDI(uint32_t instr);
+void instrADDIU(uint32_t instr);
+void instrANDI(uint32_t instr);
+void instrBEQ(uint32_t instr);
+void instrBNE(uint32_t instr);
+void instrLBU(uint32_t instr);
+void instrLHU(uint32_t instr);
+void instrLUI(uint32_t instr);
+void instrLW(uint32_t instr);
+void instrORI(uint32_t instr);
+void instrSLTI(uint32_t instr);
+void instrSLTIU(uint32_t instr);
+void instrSB(uint32_t instr);
+void instrSH(uint32_t instr);
+void instrSW(uint32_t instr);

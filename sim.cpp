@@ -10,15 +10,13 @@
 #include "EndianHelpers.h"
 #include "decode.h"
 #include "register.h"
+#include "instr.h"
 
+/* std huh ;) */
 using namespace std;
 
 Register_T regs;
 
-static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
-{
-    // this isnt done obviously im just showing this as an example
-}
 
 static void arithERROR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
