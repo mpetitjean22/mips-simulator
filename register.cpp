@@ -16,6 +16,18 @@ uint32_t generalRegRead(Register_T regs, int num)
     return regs.general[num];
 }
 
+void pcRegWrite(Register_T regs, uint32_t npc){
+      regs.pc = npc;
+}
+
+void pcIncrementFour(Register_T regs){
+      regs.pc += 4; 
+}
+
+uint32_t pcRegRead(Register_T regs){
+   return regs.pc;
+}
+
 void convertToRegInfo(Register_T regs, RegisterInfo *regInfo)
 {
     int i;

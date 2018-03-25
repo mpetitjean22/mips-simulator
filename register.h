@@ -20,4 +20,8 @@ uint32_t generalRegRead(Register_T regs, int num);
 void convertToRegInfo(Register_T regs, RegisterInfo *reg);
 void initReg(Register_T regs);
 
+void pcRegWrite(Register_T regs, uint32_t npc);
+uint32_t pcRegRead(Register_T regs);
+void pcIncrementFour(Register_T regs);
+
 #endif
