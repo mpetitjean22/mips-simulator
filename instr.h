@@ -16,6 +16,7 @@ void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt);
 void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt);
 void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt);
 void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt);
+void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt);
 
 /* J types */
 void instrJ(uint32_t instr);
