@@ -15,5 +15,5 @@ decode.o: decode.h decode.cpp
 register.o: register.h register.cpp
 	$(CC) $(FLAGS) -c register.cpp
 
-sim: sim.cpp decode.o register.o
-	$(CC) $(FLAGS) -o sim sim.cpp UtilityFunctions.o decode.o register.o -I ./
+sim: sim.cpp decode.o register.o instr.o
+	$(CC) $(FLAGS) -o sim sim.cpp UtilityFunctions.o decode.o register.o instr.o -I ./
