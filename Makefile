@@ -4,7 +4,10 @@ FLAGS = -Wall
 all: sim
 
 clean:
-	rm sim decode.o register.o
+	rm sim decode.o register.o instr.o
+
+instr.o: instr.h instr.cpp
+	$(CC) $(FLAGS) -c instr.cpp
 
 decode.o: decode.h decode.cpp
 	$(CC) $(FLAGS) -c decode.cpp
