@@ -4,6 +4,7 @@
 
 #ifndef REGISTERINFO_INCLUDED
 #define REGISTERINFO_INCLUDED
+
 #include "RegisterInfo.h"
 #endif
 
@@ -96,6 +97,8 @@ int main(int argc, char *argv[])
 {
     FILE *file;
     uint32_t address;
+    RegisterInfo reg;
+
 
     if (argc != 2) {
         fprintf(stderr, "%s: Incorrect usage. Provide a MIPS file as an argument.\n", argv[0]);
@@ -109,34 +112,6 @@ int main(int argc, char *argv[])
     mem = createMemoryStore();
     address = 0x0;
 
-    /* initialize registers */
-    int i;
-    reg.at = 0;
-    reg.gp = 0;
-    reg.sp = 0;
-    reg.fp = 0;
-    reg.ra = 0;
-
-    for(i=0; i<V_REG_SIZE; i++){
-        reg.v[i] = 0;
-    }
-
-    for(i=0; i<A_REG_SIZE; i++){
-        reg.a[i] = 0;
-    }
-
-    for(i=0; i<T_REG_SIZE; i++){
-        reg.t[i] = 0;
-    }
-
-    for(i=0; i<S_REG_SIZE; i++){
-        reg.s[i] = 0;
-    }
-
-    for(i =0; i<K_REG_SIZE; i++){
-        reg.k[i] = 0;
-    }
-
     while ( !feof(file)) {
         uint32_t temp;
         fread(&temp, 4, 1, file);
@@ -144,7 +119,7 @@ int main(int argc, char *argv[])
 	    address+=0x4;
     }
 
-
+   convertToRegInfo(regs, &reg); 
 
     dumpRegisterState(reg);
     dumpMemoryState(mem);
