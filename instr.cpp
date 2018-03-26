@@ -2,14 +2,13 @@
 /* instr.h                                                            */
 /* Author: S L O T H                                                  */
 /*--------------------------------------------------------------------*/
-
 #include "register.h"
 #include "MemoryStore.h"
+#include "decode.h"
 #include <stdint.h>
 
 extern Register_T regs;
 extern MemoryStore *mem;
-
 /* R TYPE INSTRUCTIONS */
 
 /* AHHHH WHAT ARE WE DOING ABOUT PC??? */
@@ -20,7 +19,7 @@ void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
       REGISTER NUM IS LESS THAN 32??? */
 
    int32_t sum;
-   sum = (int32_t)generalRegRead(regs, rs) + (int32_2)generalRegRead(regs, rt);
+   sum = (int32_t)generalRegRead(regs, rs) + (int32_t)generalRegRead(regs, rt);
    generalRegWrite(regs, rd, (uint32_t)sum);
    pcIncrementFour(regs);
 }
@@ -43,7 +42,7 @@ void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt)
 
 void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
-   unint32_t result;
+   uint32_t result;
    result = ~(generalRegRead(regs, rs) | generalRegRead(regs, rt));
    generalRegWrite(regs, rd, result);
    pcIncrementFour(regs);
@@ -51,7 +50,7 @@ void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
 
 void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
-   unint32_t result;
+   uint32_t result;
    result = (generalRegRead(regs, rs) | generalRegRead(regs, rt));
    generalRegWrite(regs, rd, result);
    pcIncrementFour(regs);
@@ -99,7 +98,7 @@ void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
 void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
    int32_t sum;
-   sum = (int32_t)generalRegRead(regs, rs) - (int32_2)generalRegRead(regs, rt);
+   sum = (int32_t)generalRegRead(regs, rs) - (int32_t)generalRegRead(regs, rt);
    generalRegWrite(regs, rd, (uint32_t)sum);
    pcIncrementFour(regs);
 }
@@ -126,6 +125,7 @@ void instrJ(uint32_t instr)
    uint32_t oldPC, npc;
    jTypeDecode(instr, &address);
    oldPC = pcRegRead(regs);
+   npc = ((oldPC+4) & 0xf0000000) | (address<<2);
    pcRegWrite(regs, npc);
 }
 
@@ -135,7 +135,7 @@ void instrJAL(uint32_t instr)
    uint32_t oldPC, npc;
    jTypeDecode(instr, &address);
    oldPC = pcRegRead(regs);
-
+   npc = ((oldPC+4) & 0xf0000000) | (address<<2);
    generalRegWrite(regs, (uint32_t)31, (uint32_t)oldPC+4);
    pcRegWrite(regs, npc);
 }
@@ -264,7 +264,7 @@ void instrLUI(uint32_t instr)
    uint32_t result;
 
    iTypeDecode(instr, &rs, &rt, &imm);
-   result = (uint32)(imm << 16);
+   result = (uint32_t)(imm << 16);
    generalRegWrite(regs, rt, result);
    pcIncrementFour(regs);
 }
@@ -328,7 +328,7 @@ void instrSB(uint32_t instr)
 {
    int rs, rt;
    uint16_t imm;
-   uint32_t memAddress, result, val;
+   uint32_t memAddress, val;
 
    iTypeDecode(instr, &rs, &rt, &imm);
    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
@@ -341,7 +341,7 @@ void instrSH(uint32_t instr)
 {
    int rs, rt;
    uint16_t imm;
-   uint32_t memAddress, result, val;
+   uint32_t memAddress, val;
 
    iTypeDecode(instr, &rs, &rt, &imm);
    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
@@ -354,7 +354,7 @@ void instrSW(uint32_t instr)
 {
    int rs, rt;
    uint16_t imm;
-   uint32_t memAddress, result, val;
+   uint32_t memAddress;
 
    iTypeDecode(instr, &rs, &rt, &imm);
    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
