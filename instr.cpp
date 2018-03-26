@@ -3,6 +3,13 @@
 /* Author: S L O T H                                                  */
 /*--------------------------------------------------------------------*/
 
+#include "register.h"
+#include "MemoryStore.h"
+#include <stdint.h>
+
+extern Register_T regs;
+extern MemoryStore *mem;
+
 /* R TYPE INSTRUCTIONS */
 
 /* AHHHH WHAT ARE WE DOING ABOUT PC??? */

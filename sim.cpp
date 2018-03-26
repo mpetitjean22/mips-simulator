@@ -16,6 +16,7 @@
 using namespace std;
 
 Register_T regs;
+MemoryStore *mem;
 
 
 static void arithERROR(uint32_t instr, int rs, int rt, int rd, int shamt)
@@ -93,8 +94,6 @@ static void rootDecode(uint32_t instr)
 
 int main(int argc, char *argv[])
 {
-    MemoryStore *mem;
-    RegisterInfo reg;
     FILE *file;
     uint32_t address;
 
