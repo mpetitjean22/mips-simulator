@@ -26,5 +26,5 @@ void iTypeDecode(uint32_t instr, int *rs, int *rt, uint16_t *imm)
 
 void jTypeDecode(uint32_t instr, uint32_t *addr)
 {
-    *addr = ((regs.pc + 4) & J_PC_MASK) | ((instr & ADDR_MASK) << 2);
+    *addr = ((pcRegRead(regs) + 4) & J_PC_MASK) | ((instr & ADDR_MASK) << 2);
 }

@@ -2,17 +2,21 @@
 /* instr.h                                                            */
 /* Author: S L O T H                                                  */
 /*--------------------------------------------------------------------*/
+#include <stdint.h>
+#include <cstdio>
+#include <cstdlib>
 #include "register.h"
 #include "MemoryStore.h"
 #include "decode.h"
 
 extern Register_T regs;
 extern MemoryStore *mem;
+
 /* R TYPE INSTRUCTIONS */
 
 /* AHHHH WHAT ARE WE DOING ABOUT PC??? */
 
-void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     /* QUEST FOR LOCHNESS: DO WE CHECK ANYWHERE TO MAKE SURE THE
        REGISTER NUM IS LESS THAN 32??? */
@@ -23,7 +27,7 @@ void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t sum;
     sum = generalRegRead(regs, rs) + generalRegRead(regs, rt);
@@ -31,7 +35,7 @@ void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t andVal;
     andVal = generalRegRead(regs, rs) & generalRegRead(regs, rt);
@@ -39,7 +43,7 @@ void instrAND(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t result;
     result = ~(generalRegRead(regs, rs) | generalRegRead(regs, rt));
@@ -47,7 +51,7 @@ void instrNOR(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t result;
     result = (generalRegRead(regs, rs) | generalRegRead(regs, rt));
@@ -55,7 +59,7 @@ void instrOR(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrSLT(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSLT(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     if ((int32_t)generalRegRead(regs, rs) < (int32_t)generalRegRead(regs, rt)) {
         generalRegWrite(regs, rd, (uint32_t)1);
@@ -65,7 +69,7 @@ void instrSLT(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     if (generalRegRead(regs, rs) < generalRegRead(regs, rt)) {
         generalRegWrite(regs, rd, (uint32_t)1);
@@ -76,7 +80,7 @@ void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt)
 }
 
 /* SHAMT SHOULD BE UNISGNED???? */
-void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t result;
     result = generalRegRead(regs, rt) << shamt;
@@ -84,7 +88,7 @@ void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t result;
     result = generalRegRead(regs, rt) >> shamt;
@@ -92,7 +96,7 @@ void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     int32_t sum;
     sum = (int32_t)generalRegRead(regs, rs) - (int32_t)generalRegRead(regs, rt);
@@ -100,7 +104,7 @@ void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t sum;
     sum = generalRegRead(regs, rs) - generalRegRead(regs, rt);
@@ -108,7 +112,7 @@ void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
+static void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     /* should we check if its word aligned? */
     pcRegWrite(regs, generalRegRead(regs, rs));
@@ -116,7 +120,7 @@ void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
 /*--------------------------------------------------------------------*/
 
 /* J TYPE INSTRUCTIONS*/
-void instrJ(uint32_t instr)
+static void instrJ(uint32_t instr)
 {
     uint32_t address;
     uint32_t oldPC, npc;
@@ -126,7 +130,7 @@ void instrJ(uint32_t instr)
     pcRegWrite(regs, npc);
 }
 
-void instrJAL(uint32_t instr)
+static void instrJAL(uint32_t instr)
 {
     uint32_t address;
     uint32_t oldPC, npc;
@@ -142,7 +146,7 @@ void instrJAL(uint32_t instr)
 /* I TYPE INSTRUCTIONS */
 
 /* signed extends the immediate to 32 bits */
-uint32_t somethingToSignExtend(uint16_t imm){
+static uint32_t somethingToSignExtend(uint16_t imm){
     /* ooofff i hate bits... double check this */
     uint32_t newMasked;
     /* signed */
@@ -154,7 +158,7 @@ uint32_t somethingToSignExtend(uint16_t imm){
     return newMasked;
 }
 
-void instrADDI(uint32_t instr)
+static void instrADDI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -166,11 +170,13 @@ void instrADDI(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrADDIU(uint32_t instr)
+static void instrADDIU(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
     uint32_t result;
+
+    fprintf(stderr, "%s\n", "lmao");
 
     iTypeDecode(instr, &rs, &rt, &imm);
     result = generalRegRead(regs,rs) + somethingToSignExtend(imm);
@@ -178,7 +184,7 @@ void instrADDIU(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrANDI(uint32_t instr)
+static void instrANDI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -190,7 +196,7 @@ void instrANDI(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrBEQ(uint32_t instr)
+static void instrBEQ(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -207,7 +213,7 @@ void instrBEQ(uint32_t instr)
 
 }
 
-void instrBNE(uint32_t instr)
+static void instrBNE(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -224,7 +230,7 @@ void instrBNE(uint32_t instr)
 
 }
 
-void instrLBU(uint32_t instr)
+static void instrLBU(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -237,7 +243,7 @@ void instrLBU(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrLHU(uint32_t instr)
+static void instrLHU(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -250,7 +256,7 @@ void instrLHU(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrLUI(uint32_t instr)
+static void instrLUI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -262,7 +268,7 @@ void instrLUI(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrLW(uint32_t instr)
+static void instrLW(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -275,7 +281,7 @@ void instrLW(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrORI(uint32_t instr)
+static void instrORI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -287,7 +293,7 @@ void instrORI(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrSLTI(uint32_t instr)
+static void instrSLTI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -301,7 +307,7 @@ void instrSLTI(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrSLTIU(uint32_t instr)
+static void instrSLTIU(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -315,7 +321,7 @@ void instrSLTIU(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrSB(uint32_t instr)
+static void instrSB(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -328,7 +334,7 @@ void instrSB(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrSH(uint32_t instr)
+static void instrSH(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -341,7 +347,7 @@ void instrSH(uint32_t instr)
     pcIncrementFour(regs);
 }
 
-void instrSW(uint32_t instr)
+static void instrSW(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
@@ -351,4 +357,87 @@ void instrSW(uint32_t instr)
     memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
     mem->setMemValue(memAddress, generalRegRead(regs, rt), WORD_SIZE);
     pcIncrementFour(regs);
+}
+
+
+static void arithERROR(uint32_t instr, int rs, int rt, int rd, int shamt)
+{
+    fprintf(stderr, "Incorrect funct encountered with instruction: %8x\n",
+            instr);
+    exit(EXIT_FAILURE);
+}
+
+static void (*arithDecodeTable[64])(uint32_t, int, int, int, int) = {
+    instrSLL,   arithERROR, instrSRL,   arithERROR,  // 0x00-0x03
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x04-0x07
+    instrJR,    arithERROR, arithERROR, arithERROR,  // 0x08-0x0B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x0C-0x0F
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x10-0x13
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x14-0x17
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x18-0x1B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x1C-0x1F
+    instrADD,   instrADDU,  instrSUB,   instrSUBU,   // 0x20-0x23
+    instrAND,   instrOR,    arithERROR, instrNOR,    // 0x24-0x27
+    arithERROR, arithERROR, instrSLT,   instrSLTU,   // 0x28-0x2B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x2C-0x2F
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x30-0x33
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x34-0x37
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x38-0x3B
+    arithERROR, arithERROR, arithERROR, arithERROR,  // 0x3C-0x3F
+};
+
+static void arithDecode(uint32_t instr)
+{
+    int rs, rt, rd, shamt, funct;
+
+    rTypeDecode(instr, &rs, &rt, &rd, &shamt, &funct);
+    arithDecodeTable[funct](instr, rs, rt, rd, shamt);
+}
+
+static void rootERROR(uint32_t instr)
+{
+    fprintf(stderr, "Incorrect opcode encountered with instruction: %8x\n",
+            instr);
+    exit(EXIT_FAILURE);
+}
+
+
+static void (*rootDecodeTable[64])(uint32_t) = {
+    arithDecode, rootERROR,  instrJ,    instrJAL,    // 0x00-0x03
+    instrBEQ,    instrBNE,   rootERROR, rootERROR,   // 0x04-0x07
+    instrADDI,   instrADDIU, instrSLTI, instrSLTIU,  // 0x08-0x0B
+    instrANDI,   instrORI,   rootERROR, instrLUI,    // 0x0C-0x0F
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x10-0x13
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x14-0x17
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x18-0x1B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x1C-0x1F
+    rootERROR,   rootERROR,  rootERROR, instrLW,     // 0x20-0x23
+    instrLBU,    instrLHU,   rootERROR, rootERROR,   // 0x24-0x27
+    instrSB,     instrSH,    rootERROR, instrSW,     // 0x28-0x2B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x2C-0x2F
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x30-0x33
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x34-0x37
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x38-0x3B
+    rootERROR,   rootERROR,  rootERROR, rootERROR,   // 0x3C-0x3F
+};
+
+static void rootDecode(uint32_t instr)
+{
+    if (instr == (uint32_t) 0xfeedfeed) {
+        RegisterInfo reg;
+
+        convertToRegInfo(regs, &reg);
+        dumpRegisterState(reg);
+        dumpMemoryState(mem);
+        exit(EXIT_SUCCESS);
+    }
+    rootDecodeTable[(instr & OPCODE_MASK) >> OPCODE_SHIFT](instr);
+}
+
+void execCurrentInstr(void)
+{
+    uint32_t instr;
+    mem->getMemValue(pcRegRead(regs), instr, WORD_SIZE);
+    fprintf(stderr, "%x %x\n", instr, pcRegRead(regs));
+    rootDecode(instr);
 }

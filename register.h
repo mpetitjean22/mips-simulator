@@ -10,15 +10,12 @@
 
 #define NUM_REGS 32
 
-typedef struct {
-    uint32_t general[NUM_REGS];
-    uint32_t pc;
-} Register_T;
+typedef struct Register *Register_T;
 
 void generalRegWrite(Register_T regs, int num, uint32_t value);
 uint32_t generalRegRead(Register_T regs, int num);
 void convertToRegInfo(Register_T regs, RegisterInfo *reg);
-void initReg(Register_T regs);
+Register_T newReg(void);
 
 void pcRegWrite(Register_T regs, uint32_t npc);
 uint32_t pcRegRead(Register_T regs);
