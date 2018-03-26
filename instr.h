@@ -3,6 +3,8 @@
 /* Author: S L O T H                                                  */
 /*--------------------------------------------------------------------*/
 
+#include <stdint.h>
+
 /* R types */
 void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt);
 void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt);

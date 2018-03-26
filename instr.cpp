@@ -5,7 +5,6 @@
 #include "register.h"
 #include "MemoryStore.h"
 #include "decode.h"
-#include <stdint.h>
 
 extern Register_T regs;
 extern MemoryStore *mem;
