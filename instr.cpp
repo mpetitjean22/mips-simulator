@@ -21,10 +21,19 @@ static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
     /* QUEST FOR LOCHNESS: DO WE CHECK ANYWHERE TO MAKE SURE THE
        REGISTER NUM IS LESS THAN 32??? */
 
-    int32_t sum;
-    sum = (int32_t)generalRegRead(regs, rs) + (int32_t)generalRegRead(regs, rt);
+    int32_t sum, op1, op2;
+    op1 = (int32_t)generalRegRead(regs, rs);
+    op2 = (int32_t)generalRegRead(regs, rt);
+    sum = op1 + op2;
+
     generalRegWrite(regs, rd, (uint32_t)sum);
     pcIncrementFour(regs);
+
+    /* check for overflow */
+    if(((op1>0) && (op2>0) && (sum<0)) ||
+        ((op2<0) && (op1<0) && (sum>=0))){
+        pcRegWrite(regs, (uint32_t)0x8000);
+    }
 }
 
 static void instrADDU(uint32_t instr, int rs, int rt, int rd, int shamt)
@@ -98,10 +107,19 @@ static void instrSRL(uint32_t instr, int rs, int rt, int rd, int shamt)
 
 static void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
-    int32_t sum;
-    sum = (int32_t)generalRegRead(regs, rs) - (int32_t)generalRegRead(regs, rt);
+    int32_t sum, op1, op2;
+    op1 = (int32_t)generalRegRead(regs, rs);
+    op2 = (int32_t)generalRegRead(regs, rt);
+    sum =  op1 - op2;
+
     generalRegWrite(regs, rd, (uint32_t)sum);
     pcIncrementFour(regs);
+
+    /* checks for overflow */
+    if(((op1>=0) && (op2<0) && (sum<0)) ||
+        ((op2<0) && (op1>=0) && (sum>=0))){
+        pcRegWrite(regs, (uint32_t)0x8000);
+    }
 }
 
 static void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
