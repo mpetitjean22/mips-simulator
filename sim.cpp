@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	    address+=0x4;
     }
 
-   convertToRegInfo(regs, &reg); 
+    convertToRegInfo(regs, &reg); 
 
     dumpRegisterState(reg);
     dumpMemoryState(mem);
