@@ -148,9 +148,6 @@ static void setException(void)
 
 static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
-    /* QUEST FOR LOCHNESS: DO WE CHECK ANYWHERE TO MAKE SURE THE
-       REGISTER NUM IS LESS THAN 32??? */
-
     int32_t sum, op1, op2;
     op1 = (int32_t)generalRegRead(regs, rs);
     op2 = (int32_t)generalRegRead(regs, rt);
@@ -218,7 +215,6 @@ static void instrSLTU(uint32_t instr, int rs, int rt, int rd, int shamt)
     pcIncrementFour(regs);
 }
 
-/* SHAMT SHOULD BE UNISGNED???? */
 static void instrSLL(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     uint32_t result;
@@ -262,7 +258,6 @@ static void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
 
 static void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
-    /* should we check if its word aligned? */
     uint32_t address = generalRegRead(regs, rs);
     pcIncrementFour(regs);
     if (execDelaySlot()) {
@@ -299,8 +294,8 @@ static void instrJAL(uint32_t instr)
 /* I TYPE INSTRUCTIONS */
 
 /* signed extends the immediate to 32 bits */
-static uint32_t somethingToSignExtend(uint16_t imm){
-    /* ooofff i hate bits... double check this */
+static uint32_t signExtend(uint16_t imm)
+{
     uint32_t newMasked;
     /* signed */
     if (((1 << 15) & imm) >> 15) {
@@ -315,12 +310,20 @@ static void instrADDI(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
-    int32_t result;
+    int32_t op1, op2, result;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    result = (int32_t)generalRegRead(regs,rs) + (int32_t)somethingToSignExtend(imm);
+    op1 = (int32_t)generalRegRead(regs,rs);
+    op2 = (int32_t)signExtend(imm);
+    result = op1 + op2;
     generalRegWrite(regs, rt, (uint32_t)result);
     pcIncrementFour(regs);
+
+    /* check for overflow */
+    if(((op1>0) && (op2>0) && (result<0)) ||
+        ((op2<0) && (op1<0) && (result>=0))){
+        setException();
+    }
 }
 
 static void instrADDIU(uint32_t instr)
@@ -329,10 +332,8 @@ static void instrADDIU(uint32_t instr)
     uint16_t imm;
     uint32_t result;
 
-    fprintf(stderr, "%s\n", "lmao");
-
     iTypeDecode(instr, &rs, &rt, &imm);
-    result = generalRegRead(regs,rs) + somethingToSignExtend(imm);
+    result = generalRegRead(regs,rs) + signExtend(imm);
     generalRegWrite(regs, rt, result);
     pcIncrementFour(regs);
 }
@@ -344,7 +345,7 @@ static void instrANDI(uint32_t instr)
     uint32_t result;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    result = (uint32_t)(generalRegRead(regs, rs) & imm);
+    result = (uint32_t)(generalRegRead(regs, rs) & (uint32_t) imm);
     generalRegWrite(regs, rt, result);
     pcIncrementFour(regs);
 }
@@ -358,7 +359,7 @@ static void instrBEQ(uint32_t instr)
     npc = pcRegRead(regs) + 4;
     iTypeDecode(instr, &rs, &rt, &imm);
     if (generalRegRead(regs, rs) == generalRegRead(regs, rt)) {
-        npc += (uint32_t)(somethingToSignExtend(imm) << 2);
+        npc += (uint32_t)(signExtend(imm) << 2);
     } else {
         npc += 4;
     }
@@ -377,7 +378,7 @@ static void instrBNE(uint32_t instr)
     npc = pcRegRead(regs) + 4;
     iTypeDecode(instr, &rs, &rt, &imm);
     if (generalRegRead(regs, rs) != generalRegRead(regs, rt)) {
-        npc += (uint32_t)(somethingToSignExtend(imm) << 2);
+        npc += (uint32_t)(signExtend(imm) << 2);
     } else {
         npc += 4;
     }
@@ -394,8 +395,8 @@ static void instrLBU(uint32_t instr)
     uint32_t memAddress, result;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
-    mem->getMemValue(memAddress, result, BYTE_SIZE);
+    memAddress = (uint32_t)(generalRegRead(regs, rs) + signExtend(imm));
+    mem->getMemValue(memAddress+3, result, BYTE_SIZE);
     generalRegWrite(regs, rt, result);
     pcIncrementFour(regs);
 }
@@ -407,8 +408,8 @@ static void instrLHU(uint32_t instr)
     uint32_t memAddress, result;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
-    mem->getMemValue(memAddress, result, HALF_SIZE);
+    memAddress = (uint32_t)(generalRegRead(regs, rs) + signExtend(imm));
+    mem->getMemValue(memAddress+2, result, HALF_SIZE);
     generalRegWrite(regs, rt, result);
     pcIncrementFour(regs);
 }
@@ -432,7 +433,7 @@ static void instrLW(uint32_t instr)
     uint32_t memAddress, result;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = (uint32_t)(generalRegRead(regs, rs) + somethingToSignExtend(imm));
+    memAddress = (uint32_t)(generalRegRead(regs, rs) + signExtend(imm));
     mem->getMemValue(memAddress, result, WORD_SIZE);
     generalRegWrite(regs, rt, result);
     pcIncrementFour(regs);
@@ -456,7 +457,7 @@ static void instrSLTI(uint32_t instr)
     uint16_t imm;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    if ((int32_t)generalRegRead(regs, rs) < (int32_t)somethingToSignExtend(imm)) {
+    if ((int32_t)generalRegRead(regs, rs) < (int32_t)signExtend(imm)) {
         generalRegWrite(regs, rt, (uint32_t)1);
     } else {
         generalRegWrite(regs, rt, (uint32_t)0);
@@ -470,7 +471,7 @@ static void instrSLTIU(uint32_t instr)
     uint16_t imm;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    if (generalRegRead(regs, rs) < somethingToSignExtend(imm)) {
+    if (generalRegRead(regs, rs) < signExtend(imm)) {
         generalRegWrite(regs, rt, (uint32_t)1);
     } else {
         generalRegWrite(regs, rt, (uint32_t)0);
@@ -485,7 +486,7 @@ static void instrSB(uint32_t instr)
     uint32_t memAddress, val;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+    memAddress = generalRegRead(regs, rs) + signExtend(imm);
     val = (uint32_t)(generalRegRead(regs, rt) & 0xff);
     mem->setMemValue(memAddress, val, BYTE_SIZE);
     pcIncrementFour(regs);
@@ -498,7 +499,7 @@ static void instrSH(uint32_t instr)
     uint32_t memAddress, val;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+    memAddress = generalRegRead(regs, rs) + signExtend(imm);
     val = (uint32_t)(generalRegRead(regs, rt) & 0xffff);
     mem->setMemValue(memAddress, val, HALF_SIZE);
     pcIncrementFour(regs);
@@ -511,7 +512,7 @@ static void instrSW(uint32_t instr)
     uint32_t memAddress;
 
     iTypeDecode(instr, &rs, &rt, &imm);
-    memAddress = generalRegRead(regs, rs) + somethingToSignExtend(imm);
+    memAddress = generalRegRead(regs, rs) + signExtend(imm);
     mem->setMemValue(memAddress, generalRegRead(regs, rt), WORD_SIZE);
     pcIncrementFour(regs);
 }
@@ -595,7 +596,6 @@ static void execCurrentInstr(void)
 {
     uint32_t instr;
     mem->getMemValue(pcRegRead(regs), instr, WORD_SIZE);
-    fprintf(stderr, "%x %x\n", instr, pcRegRead(regs));
     rootDecode(instr);
 }
 
@@ -623,15 +623,14 @@ int main(int argc, char *argv[])
         uint32_t temp;
         fread(&temp, 4, 1, file);
         mem->setMemValue(address, ConvertWordToBigEndian(temp), WORD_SIZE);
-	    address+=0x4;
+	    address += 0x4;
     }
 
-    while (1) {
+    while (pcRegRead(regs) < MEMORY_SIZE) {
         execCurrentInstr();
     }
 
     convertToRegInfo(regs, &reg);
-
     dumpRegisterState(reg);
     dumpMemoryState(mem);
 

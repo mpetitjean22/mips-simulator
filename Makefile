@@ -6,5 +6,5 @@ all: sim
 clean:
 	rm sim
 
-sim: sim.cpp decode.o register.o instr.o
+sim: sim.cpp
 	$(CC) $(FLAGS) -o sim sim.cpp UtilityFunctions.o -I ./
