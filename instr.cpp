@@ -8,13 +8,33 @@
 #include "register.h"
 #include "MemoryStore.h"
 #include "decode.h"
+#include "instr.h"
 
 extern Register_T regs;
 extern MemoryStore *mem;
 
+bool exception;
+
+enum {EXCEPTION_ADDR = 0x8000};
+
 /* R TYPE INSTRUCTIONS */
 
 /* AHHHH WHAT ARE WE DOING ABOUT PC??? */
+
+/* Executes the next instruction for the purpose of the branch delay slot.
+   Returns true if the execution should continue normally. */
+static bool execDelaySlot(void)
+{
+    exception = false;
+    execCurrentInstr();
+    return !exception;
+}
+
+static void setException(void)
+{
+    exception = true;
+    pcRegWrite(regs, EXCEPTION_ADDR);
+}
 
 static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
@@ -32,7 +52,7 @@ static void instrADD(uint32_t instr, int rs, int rt, int rd, int shamt)
     /* check for overflow */
     if(((op1>0) && (op2>0) && (sum<0)) ||
         ((op2<0) && (op1<0) && (sum>=0))){
-        pcRegWrite(regs, (uint32_t)0x8000);
+        setException();
     }
 }
 
@@ -118,7 +138,7 @@ static void instrSUB(uint32_t instr, int rs, int rt, int rd, int shamt)
     /* checks for overflow */
     if(((op1>=0) && (op2<0) && (sum<0)) ||
         ((op2<0) && (op1>=0) && (sum>=0))){
-        pcRegWrite(regs, (uint32_t)0x8000);
+        setException();
     }
 }
 
@@ -133,7 +153,11 @@ static void instrSUBU(uint32_t instr, int rs, int rt, int rd, int shamt)
 static void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
 {
     /* should we check if its word aligned? */
-    pcRegWrite(regs, generalRegRead(regs, rs));
+    uint32_t address = generalRegRead(regs, rs);
+    pcIncrementFour(regs);
+    if (execDelaySlot()) {
+        pcRegWrite(regs, address);
+    }
 }
 /*--------------------------------------------------------------------*/
 
@@ -141,22 +165,23 @@ static void instrJR(uint32_t instr, int rs, int rt, int rd, int shamt)
 static void instrJ(uint32_t instr)
 {
     uint32_t address;
-    uint32_t oldPC, npc;
     jTypeDecode(instr, &address);
-    oldPC = pcRegRead(regs);
-    npc = ((oldPC+4) & 0xf0000000) | (address<<2);
-    pcRegWrite(regs, npc);
+
+    pcIncrementFour(regs);
+    if (execDelaySlot()) {
+        pcRegWrite(regs, address);
+    }
 }
 
 static void instrJAL(uint32_t instr)
 {
     uint32_t address;
-    uint32_t oldPC, npc;
     jTypeDecode(instr, &address);
-    oldPC = pcRegRead(regs);
-    npc = ((oldPC+4) & 0xf0000000) | (address<<2);
-    generalRegWrite(regs, (uint32_t)31, (uint32_t)oldPC+4);
-    pcRegWrite(regs, npc);
+    generalRegWrite(regs, (uint32_t)31, (uint32_t)pcRegRead(regs) + 8);
+    pcIncrementFour(regs);
+    if (execDelaySlot()) {
+        pcRegWrite(regs, address);
+    }
 }
 
 /*--------------------------------------------------------------------*/
@@ -218,34 +243,38 @@ static void instrBEQ(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
-    uint32_t oldPC, npc;
+    uint32_t npc;
 
-    oldPC = pcRegRead(regs);
+    npc = pcRegRead(regs) + 4;
     iTypeDecode(instr, &rs, &rt, &imm);
     if (generalRegRead(regs, rs) == generalRegRead(regs, rt)) {
-        npc = oldPC + 4 + (uint32_t)(somethingToSignExtend(imm) << 2);
-        pcRegWrite(regs, npc);
-    } else{
-        pcIncrementFour(regs);
+        npc += (uint32_t)(somethingToSignExtend(imm) << 2);
+    } else {
+        npc += 4;
     }
-
+    pcIncrementFour(regs);
+    if (execDelaySlot()) {
+        pcRegWrite(regs, npc);
+    }
 }
 
 static void instrBNE(uint32_t instr)
 {
     int rs, rt;
     uint16_t imm;
-    uint32_t oldPC, npc;
+    uint32_t npc;
 
-    oldPC = pcRegRead(regs);
+    npc = pcRegRead(regs) + 4;
     iTypeDecode(instr, &rs, &rt, &imm);
     if (generalRegRead(regs, rs) != generalRegRead(regs, rt)) {
-        npc = oldPC + 4 + (uint32_t)(somethingToSignExtend(imm) << 2);
-        pcRegWrite(regs, npc);
-    } else{
-        pcIncrementFour(regs);
+        npc += (uint32_t)(somethingToSignExtend(imm) << 2);
+    } else {
+        npc += 4;
     }
-
+    pcIncrementFour(regs);
+    if (execDelaySlot()) {
+        pcRegWrite(regs, npc);
+    }
 }
 
 static void instrLBU(uint32_t instr)
