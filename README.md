@@ -1,3 +1,2 @@
-# nips-simulator
-we like 
-n i p s
+# mips-simulator
+the mips simulator
